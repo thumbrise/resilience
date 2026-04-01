@@ -1,0 +1,33 @@
+#schema: https://taskfile.dev/schema.json
+version: '3.17'
+
+vars:
+  GO_VERSION: "1.24"
+  GOLANGCI_LINT_VERSION: "v2.11.4"
+
+tasks:
+  lint:
+    desc: Run lint with auto-fix where possible (dev workflow)
+    cmds:
+      - docker run --rm -v $(pwd):/app -v ~/.cache/golangci-lint/{{.GOLANGCI_LINT_VERSION}}:/root/.cache -w /app golangci/golangci-lint:{{.GOLANGCI_LINT_VERSION}} golangci-lint run --fix
+      - go tool license-eye header fix
+
+  lint:ci:
+    desc: Run lint checks without auto-fix (CI workflow)
+    cmds:
+      - docker run --rm -v $(pwd):/app -v ~/.cache/golangci-lint/{{.GOLANGCI_LINT_VERSION}}:/root/.cache -w /app golangci/golangci-lint:{{.GOLANGCI_LINT_VERSION}} golangci-lint run
+      - go tool license-eye header check
+      - go tool govulncheck ./...
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test ./... -v
+      - go test ./... -v -run=NONE -bench=. -benchmem
+
+  generate:
+    desc: Fix license headers
+    aliases:
+      - gen
+    cmds:
+      - go tool license-eye header fix

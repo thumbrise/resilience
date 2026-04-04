@@ -26,6 +26,10 @@ import (
 // ErrCyclicDependency is returned when the internal dependency graph has a cycle.
 var ErrCyclicDependency = errors.New("cyclic dependency")
 
+// ErrRootRequiresSub is returned when the root module requires an internal sub-module.
+// Root must be the zero-deps core — subs depend on root, not reverse.
+var ErrRootRequiresSub = errors.New("root module must not require internal sub-modules")
+
 // ValidateAcyclic checks that the internal dependency graph has no cycles.
 // Builds adjacency from sub-module Requires only, filtering to internal modules.
 // Root is intentionally excluded from the graph: in a well-structured monorepo,
@@ -37,6 +41,17 @@ func ValidateAcyclic(state multimod.State) (multimod.State, error) {
 
 	for _, sub := range state.Subs {
 		internal[sub.Path] = true
+	}
+
+	// Root must not require any internal sub-module.
+	for _, req := range state.Root.Requires {
+		if internal[req] {
+			return state, fmt.Errorf(
+				"%w: root requires %s — root must be the zero-deps core",
+				ErrRootRequiresSub,
+				req,
+			)
+		}
 	}
 
 	adjacency := make(map[string][]string)

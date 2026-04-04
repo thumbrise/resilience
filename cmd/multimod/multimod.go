@@ -56,6 +56,7 @@ func main() {
 const toolHeader = "multimod — Zero-config multi-module management tool"
 
 // warnBanner returns nil State and a banner with a warning message.
+// Free function: bootstrap DSL helper, not a method — no owning type in main package.
 func warnBanner(msg string) (*multimod.State, string) {
 	return nil, fmt.Sprintf("%s\n\n⚠ %s", toolHeader, msg)
 }
@@ -63,6 +64,8 @@ func warnBanner(msg string) (*multimod.State, string) {
 // bootstrap runs Boot + Discovery + Apply and returns State + banner string.
 // Apply is always called — any multimod interaction guarantees synced FS.
 // Never fails fatally — returns nil State and a warning banner instead.
+// Free function: orchestrates multiple independent components (Boot, Discovery, Applier),
+// does not belong to any single type.
 func bootstrap(logger *slog.Logger) (*multimod.State, string) {
 	boot, err := NewBootloader().Boot()
 	if err != nil {
@@ -100,6 +103,7 @@ func bootstrap(logger *slog.Logger) (*multimod.State, string) {
 }
 
 // buildBanner creates the status banner from discovered State.
+// Free function: pure formatting, bootstrap DSL — no owning type in main package.
 func buildBanner(state multimod.State) string {
 	var sb strings.Builder
 

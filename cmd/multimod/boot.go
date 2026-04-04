@@ -92,7 +92,7 @@ func (b Bootloader) hasSubModules(rootDir multimod.AbsDir) (bool, error) {
 		}
 
 		if d.IsDir() {
-			if multimod.NewDefaultDirFilter().ShouldSkip(d.Name()) {
+			if multimod.NewDefaultDirFilter().ShouldSkip(d.Name()) { //nolint:gocritic // micro-optimization: hoist filter before WalkDir for large monorepos
 				return filepath.SkipDir
 			}
 

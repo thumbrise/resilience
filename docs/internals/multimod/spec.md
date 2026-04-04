@@ -1,6 +1,6 @@
 ---
-title: "multimod Specification — Architecture for Go Multi-Module Management"
-description: "Full technical specification: Boot, Kernel, Discovery, Fixer pipeline. State contract, verify algorithm, release workflow for Go multi-module monorepos."
+title: "multimod Specification"
+description: "Full technical specification for multimod: zero-config multi-module management tool for Go monorepos. Architecture, commands, release flow, generate, conventions."
 head:
   - - meta
     - name: keywords
@@ -9,57 +9,56 @@ head:
 
 # Specification
 
+## Philosophy
+
+Multimod is an **infrastructure autopilot** for Go multi-module monorepos. The developer does not think about go.work, replace directives, go version sync, or release transforms. Multimod thinks for them.
+
+**Convention over configuration.** Zero config files. Directory structure is the config. `.multimod/` directory is the only convention — and it's optional until you need templates.
+
+**Always Apply.** Every invocation of multimod guarantees the filesystem matches the desired state. You cannot forget to sync. You cannot end up in an inconsistent state.
+
+**Terraform thinking.** Discovery reads the filesystem and builds the desired State. Applier makes the filesystem match it. No diff-based patching — declare desired, apply unconditionally.
+
 ## Architecture
 
 ```
-Boot → Kernel → Discovery → Executor → Runner → Command
+Boot → Discovery → desired State → Applier
 ```
 
 ### Boot
 
-Finds the project root (walks up directories looking for `go.mod`). Determines if this is a multi-module project (sub-directories with their own `go.mod`). If not — transparent proxy to `go`, multimod is invisible.
-
-### Kernel
-
-Receives root path from Boot. Calls Discovery to build State. Passes State to Executor. Two responsibilities, nothing more.
+Checks that cwd has a `go.mod` — cwd is the project root. No upward directory traversal (same convention as goreleaser, terraform). Determines if this is a multi-module project (sub-directories with their own `go.mod`). If not — transparent proxy to `go`, multimod is invisible. Excludes `vendor/`, `testdata/`, `_`-prefixed, `.`-prefixed directories. Warns if no `.git` directory (CI misconfiguration, not a git repo).
 
 ### Discovery
 
-Reads the filesystem. Finds all `go.mod` files (excluding `_tools/`, `vendor/`, `testdata/`). Parses each via `golang.org/x/mod/modfile`. Builds the dependency graph from `require` directives. Returns raw State — no judgments about correctness.
+Pipeline of steps: Parse → ValidateAcyclic → EnrichGoVersion → EnrichReplaces → EnrichWorkspace.
 
-### Executor
+- **Parse** — walks filesystem, finds all `go.mod`, parses via `golang.org/x/mod/modfile`, extracts into domain `Module`. modfile types do not escape.
+- **ValidateAcyclic** — builds dependency graph from sub-module requires, delegates to `graph.DetectCycle`. Root excluded by design (core has zero internal deps).
+- **EnrichGoVersion** — sets all sub GoVersions to root's GoVersion.
+- **EnrichReplaces** — unconditional: every sub gets replace for root + every other sub. Prevents `go mod tidy` from fetching internal modules from registry (chicken-and-egg solved).
+- **EnrichWorkspace** — sets workspace to root + all subs.
 
-Resolves the command category and delegates to the appropriate Runner:
+New step = new file in `steps/` + one line in `NewDefaultDiscovery()`.
 
-- `go`, `verify`, `generate` → **FixableRunner**
-- `release` → **UnfixableRunner**
+### State
 
-### FixableRunner
+Pure domain model. Architectural boundary between Discovery and Applier. No modfile types, no FS handles.
 
-```
-Pre-invariant:  Fixer checks and fixes State (atomic: disk + model)
-Execute:        Command runs with valid State
-Post-invariant: Fixer checks State again (Command may have changed files)
-```
-
-### UnfixableRunner
-
-```
-Validate: State must already be consistent. If not — die with error.
-Execute:  ReleaseCommand transforms dev → publish state.
+```go
+type State struct {
+    Root      Module
+    Subs      []Module
+    Workspace []Module
+}
 ```
 
-Used for `release`. The assumption: you're in CI, dev-state was verified earlier.
+### Applier
 
-### Fixer
+Receives desired State, makes filesystem match it. Idempotent — compares before writing.
 
-Compares "what is" with "what should be". Fixes what it can, atomically. Uses Writer internally. Returns fixed State or error.
-
-**Atomicity contract:** either everything is fixed (disk + model) or nothing is touched.
-
-### Command
-
-Receives valid State. Trusts it completely. Does its work.
+- **syncGoWork** — generates go.work, writes only if content differs.
+- **syncGoMod** per sub — syncs go version + replaces. Three-phase replace sync: build desired → drop unwanted/stale → add missing.
 
 ## State contract
 
@@ -69,104 +68,126 @@ Valid State means:
 2. All sub-modules discovered and parsed
 3. Dependency graph is acyclic (DAG)
 4. Every sub-module has `replace` for all internal deps
-5. `go.work` contains all modules (no missing, no extra)
+5. `go.work` contains all modules
 6. `go` directive is the same everywhere (root = source of truth)
 
-## Verify + Fix algorithm
+## Two states of go.mod
 
-```
-1. FIND      — all go.mod files
-2. PARSE     — modfile.Parse() each
-3. CLASSIFY  — root, subs, internal deps graph
-4. CHECK     — go.work, replaces, go directive, graph
-5. FIX       — atomically (memory + disk) or error
-6. VERIFY    — re-run checks, issues must be empty
-```
+Every sub-module's go.mod exists in two states:
 
-### Issues
-
-| Issue | Fixable | Action |
+| | Dev-state | Publish-state |
 |---|---|---|
-| MISSING_GOWORK | ✅ | Create go.work with all modules |
-| GOWORK_MISSING_MODULE | ✅ | Add to go.work |
-| GOWORK_EXTRA_MODULE | ✅ | Remove from go.work |
-| MISSING_REPLACE | ✅ | Add replace with computed relative path |
-| GO_VERSION_MISMATCH | ✅ | Sync to root's go directive |
-| CYCLIC_DEPENDENCY | ❌ | Error: architecture issue, suggest extraction |
-| CORRUPTED_GOMOD | ❌ | Discovery fails, Kernel stops |
+| Replace | `replace example.com/root => ../` | Removed |
+| Require | `require example.com/root v0.0.0` | `require example.com/root v1.2.3` |
+| Where | Main branch, always | Detached commit behind tag |
+| Who sees | Developers | Users (`go get`) |
+| Who creates | Multimod apply | Multimod release |
+
+Dev-state is committed to git. This is normal — Go ignores replace directives in dependencies. Users never see dev-state.
+
+## go.work — committed
+
+`go.work` is part of managed state, committed to git. After `git clone` everything works: IDE resolves imports, `go mod tidy` sees workspace, `go test` runs. Multimod creates and maintains go.work, but it's useful without multimod too.
 
 ## Commands
+
+### `multimod`
+
+Apply + status banner. Every invocation syncs filesystem to desired state. Also runs generate if `.multimod/templates/` exists.
+
+CI pattern:
+```bash
+multimod && git diff --quiet || exit 1
+```
 
 ### `multimod go <args>`
 
 Transparent proxy with multi-module awareness.
 
-Multi-module commands (`test`, `vet`, `build`, `mod tidy` with `./...`): iterate all modules, aggregate results.
+Multi-module commands (registry: `test`, `vet`, `build` with `./...`, `mod tidy`): iterate all modules via `exec.CommandContext`, aggregate results.
 
-Everything else: `syscall.Exec("go", args)` — direct passthrough.
-
-Post-invariant runs after execution (e.g. `go mod tidy` may change go directive — Fixer reverts).
+Everything else: `syscall.Exec("go", args)` — direct passthrough, replaces process.
 
 ### `multimod release <version>`
 
-CI command. Transforms dev-state → publish-state.
+Transforms dev-state → publish-state. Three levels of trust:
 
-1. Validate: State must be consistent (UnfixableRunner — no auto-fix)
-2. Transform in memory: strip `replace`, pin `require` to version, skip self
-3. Self-check: no local replace remaining, all require pinned, no self-dependency
-4. Create tags: core `v1.2.3` + sub-module `<dir>/v1.2.3`
+| Flag | What it does | Who uses |
+|---|---|---|
+| (no flags) | Dry-run: show plan | Developer, verification |
+| `--write` | Locally: detached commit + tags | Developer, local testing |
+| `--write --push` | Commit + tags + push | CI pipeline |
 
-Default: dry-run (print what would change). `--write`: apply changes.
+Release flow with `--write`:
 
-Idempotent: safe to re-run if interrupted.
+1. Tag current HEAD as `v1.2.3-dev` (traceability)
+2. `git checkout --detach` (main is never touched)
+3. Strip internal replace directives from all sub go.mod
+4. Pin internal require to version
+5. `git commit "chore(release): v1.2.3 [multimod]"`
+6. Tag detached commit: `v1.2.3` (root) + `<dir>/v1.2.3` (each sub)
+7. `git checkout main` (return to dev-state)
 
-### `multimod generate`
+With `--push`: also `git push origin --tags`.
 
-Project model → templates → files.
+Main **never leaves dev-state**. The publish-state commit is detached — accessible only via tag. `go get @v1.2.3` resolves the tag, gets publish-state. `go get @latest` picks the highest stable tag.
 
-Templates live in `.multimod/templates/`. Convention:
-- `dependabot.yml.tmpl` → one file `dependabot.yml`
-- `module-ci.yml.tmpl` → N files `module-ci_<dir>.yml` (one per sub-module)
+The `-dev` tag is for human traceability — quickly find which main commit produced the release. Tools (semantic-release, changelog generators) work through git parent chain from the stable tag.
 
-Engine: Go `text/template`. Model: root, modules, go_version, dependency graph.
+### `multimod modules` (vision)
 
-Default: dry-run (show diff). `--write`: write files.
+JSON output with project structure for external tools. Not yet implemented — waiting for concrete use case.
 
-### `multimod verify`
+## Template generation (part of apply)
 
-Runs the full pipeline (Boot → Discovery → Fixer). Prints State and what was fixed.
+Not a command — a pipeline step. Runs automatically if `.multimod/templates/` exists.
 
-CI pattern:
-```bash
-multimod verify --write
-git diff --quiet || (echo "Inconsistent state. Run multimod locally." && exit 1)
+Two template types:
+
+- **Single file** — `dependabot.yml.tmpl` → one `dependabot.yml` from all modules
+- **Per-module** — <code>module-ci-&#123;&#123;.Name&#125;&#125;.yml.tmpl</code> → one file per module
+
+Path convention: template path minus `.tmpl` = output path. Directory structure in `templates/` mirrors project structure.
+
+Engine: `text/template` from stdlib. Model = State (root, subs, paths, versions, dependencies).
+
+Cleanup: per-module templates → glob pattern from template name (<code>&#123;&#123;.Name&#125;&#125;</code> → `*`). Files matching glob but not in desired set → deleted. Template deleted → multimod no longer owns those files, user cleans up manually.
+
+Generated files get header where syntax allows: `# Code generated by multimod. DO NOT EDIT.`
+
+## `.multimod/` directory
+
+Created on first run if templates are needed:
+
 ```
+.multimod/
+├── .gitignore          # ignores cache/
+├── cache/              # internal (SHA, timestamps)
+│   └── .gitignore      # *
+└── templates/          # user puts templates here
+    └── .gitkeep
+```
+
+Committed: `templates/`, `.gitignore`. Ignored: `cache/`.
 
 ## IO
 
 - **stdout** — belongs to Go. Never touched by multimod.
 - **stderr** — multimod's channel. `[multimod]` prefix. Silent when everything is ok.
 
-## Delegation to Go
+## Extension points
 
-| Task | Who |
-|---|---|
-| Parse go.mod | `golang.org/x/mod/modfile` (library) |
-| Discover modules | multimod (`find` + `modfile.Parse`) |
-| Auto-add replace | multimod (knows internal deps from graph) |
-| Sync go.work | multimod |
-| Sync go directive | multimod |
-| Validate replace paths | Go (`go mod tidy` at exec time) |
-| Detect import cycles | Go (`go build` at exec time) |
-| Strip replace (publish) | multimod (`modfile`) |
-| Pin require (publish) | multimod (`modfile`) |
-| Git tags | multimod (`git tag`) |
-| Code errors | Go (passthrough, not parsed) |
+| Extension | How | Files touched |
+|---|---|---|
+| New discovery step | New file in `steps/` + one line in `NewDefaultDiscovery()` | 1 new + 1 line |
+| New command | New struct + add to `NewCommands` registry | 1 new + 1 line |
+| New multi-module go subcommand | Add entry to `multiModuleCommands` map | 1 line |
+| New template | Add `.tmpl` file to `.multimod/templates/` | 1 file |
 
 ## Requirements
 
 - Linux / macOS (Windows via WSL)
-- Git
+- Git repository (warns if `.git` missing)
 - Core module in root, sub-modules in subdirectories
 - Sub-modules depend on core, not reverse (DAG)
 - One version for all modules at release time

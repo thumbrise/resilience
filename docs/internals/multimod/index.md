@@ -13,7 +13,9 @@ head:
 
 ## What
 
-multimod is a multi-module management tool for Go monorepos. It solves the problems that Go's toolchain doesn't: workspace management, consistency checks, publish preparation, and template generation — all with zero configuration.
+multimod is an infrastructure autopilot for Go multi-module monorepos. It solves the problems that Go's toolchain doesn't: workspace sync, replace management, go version alignment, publish preparation, and template generation — all with zero configuration.
+
+**Always Apply.** Every invocation guarantees the filesystem matches the desired state. You cannot forget to sync.
 
 ## Status
 
@@ -33,18 +35,21 @@ In Go, every project writes its own shell scripts. OTEL wrote 3000 lines of inte
 ## Commands
 
 ```
-multimod go <args>              — daily work
-multimod release <version>      — CI, publish preparation
-multimod generate               — templates → files
-multimod verify                 — check + auto-fix state
+multimod                        — apply + status (syncs FS + generates templates)
+multimod go <args>              — transparent proxy with multi-module iteration
+multimod release <version>      — publish preparation (detached commit + tags)
 ```
 
 ## Architecture
+
+```
+Boot → Discovery → desired State → Applier
+```
 
 See [Specification](./spec.md) for the full technical design.
 
 ## Pages
 
-- [Specification](./spec.md) — architecture, components, algorithms
+- [Specification](./spec.md) — architecture, commands, release flow, generate
 - [Research](./research.md) — ecosystem analysis, comparison with existing tools
 - [Vision](./vision.md) — roadmap from pkg/ to standalone repository

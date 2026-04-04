@@ -23,6 +23,8 @@ How to update:
   Banned names: `Service`, `Manager`, `Handler`, `Helper`, `Utils`, `Common`, `Base`, `Processor`, `Coordinator`, `Wrapper`. If you can't name it without a buzzword, the abstraction is wrong. Exception: unexported types implementing a concrete internal contract (e.g. `retryLoop` — retries calls, not "handles requests") are allowed when the name describes the action, not the pattern.
 - **`util` is banned** — if something is reusable, extract it into a package with a semantic name that describes what it does, not that it's a utility.
 - **No broken windows** — a misplaced field, a wrong abstraction level, a "temporary" hack — fix it now, not "later". If one shortcut stays, the next contributor assumes it's the norm and adds another. Codebase quality degrades one tolerated compromise at a time. If you can't fix it in this PR, create an issue immediately — never leave it undocumented.
+- **Registry over switch** — if a set of values will grow (commands, invariants, error categories), use a registry (map, slice, interface list) — never a switch/case or if/else chain. Switch for configuration is a broken window: every new entry modifies existing code instead of extending it. This applies even when there are only 2-3 entries — the pattern must be correct from day one.
+- **Methods over free functions** — every function must belong to a type. Free (package-level) functions pollute autocomplete and have no owner. If a function operates on data, it's a method on that data's type. If it's a constructor, it returns that type. The only exceptions: `main()`, package-level sentinel errors (`var Err* = errors.New(...)`), pure algorithm functions in dedicated algorithm packages (e.g. `graph.DetectCycle`), and **registry assemblers** — functions whose sole job is to collect and return a list of components for wiring (e.g. `NewCommands` returns `[]*cobra.Command` for the root to register). A registry assembler is not a method because it doesn't operate on one type's state — it wires multiple independent components together. Keep it in a dedicated file named after its purpose (e.g. `cmds.go`).
 
 ## Testing
 
@@ -36,6 +38,7 @@ How to update:
   1. Red test that reproduces the bug (expected behavior, currently failing).
   2. Fix that makes the test green.
   Never combine the test and the fix in a single commit — the red state must be observable in history.
+- **`testutil` is idiomatic** — shared test helpers (scaffolding, builders, assertions) live in a dedicated `testutil` package. Exported, but used only in tests. Eliminates duplication across test packages without polluting production code. Same pattern as `net/http/httptest` in stdlib. The name `testutil` is an exception to the "`util` is banned" rule — it describes a well-scoped purpose (test infrastructure), not a junk drawer.
 
 ## Error handling
 
@@ -111,6 +114,8 @@ This produces a linear history grouped by topic, not by chronological order of d
 - **Keep labels current** — if scope shifts during work (e.g. a feature becomes a refactor), update the labels. Stale labels erode trust in the backlog.
 
 ## Structural review (Torvalds rigor)
+
+Review is not just functional — it is conceptual and architectural. A PR that "works" but hides a concept, loses a meaning, cripples an architecture, or reinvents what exists (high NIH factor) does not pass. These are quality gate triggers equal to a failing test.
 
 Normal diff review catches local bugs. Structural review catches architectural rot — God Objects, lying names, glossary drift — the kind of damage that compounds silently until the codebase is unmaintainable. Torvalds rejects patches for structural violations even when the code "works". We do the same.
 

@@ -25,9 +25,12 @@ Each time: concrete pain → honest research → minimal primitive → extract w
 
 Lives in `pkg/multimod/` inside resilience. Battle-tested on resilience itself.
 
-- Implement core: Boot, Kernel, Discovery, Fixer
-- Implement commands: `go`, `verify`, `release`
-- Replace shell scripts in Taskfile
+- ✅ Boot — cwd is root, no traversal, .git warning
+- ✅ Discovery pipeline — Parse, ValidateAcyclic, Enrich*
+- ✅ Applier — sync go.work, go.mod, replaces, go version
+- ✅ CLI — `multimod go <args>` proxy with multi-module iteration
+- Implement `release` command — detached commit + dev/prod tags
+- Implement `generate` — templates in `.multimod/templates/`
 - Enable full multi-module in resilience (separate go.mod per sub-package)
 
 **Success criteria:** resilience uses multimod for all multi-module operations. Zero shell scripts for release.
@@ -36,10 +39,11 @@ Lives in `pkg/multimod/` inside resilience. Battle-tested on resilience itself.
 
 Still inside resilience. API hardening.
 
-- Implement `generate` command
+- CI examples (GitHub Actions workflows)
 - Template convention finalized
 - Error messages polished
 - Edge cases covered (empty projects, single module, nested modules)
+- `multimod modules` — JSON output for external tools
 - Tests: real temp directories, real git repos
 
 **Success criteria:** another project (internal) uses multimod successfully.

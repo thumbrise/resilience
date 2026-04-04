@@ -52,6 +52,8 @@ export default defineConfig({
             {text: '#1 — Package Extracting', link: '/devlog/001-package-extracting'},
             {text: '#2 — The Task Runner Lifecycle Gap', link: '/devlog/002-taskrunner-lifecycle-gap'},
             {text: '#3 — The Multi-Module Gap', link: '/devlog/003-multimod-gap'},
+            {text: '#4 — Building multimod', link: '/devlog/004-multimod-implementation'},
+            {text: '#5 — Release design', link: '/devlog/005-multimod-release-design'},
           ],
         },
       ],

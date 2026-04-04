@@ -39,6 +39,7 @@ export default defineConfig({
           items: [
             {text: 'Overview', link: '/internals/multimod/'},
             {text: 'Specification', link: '/internals/multimod/spec'},
+            {text: 'FAQ — Angry User Edition', link: '/internals/multimod/faq'},
             {text: 'Research', link: '/internals/multimod/research'},
             {text: 'Vision', link: '/internals/multimod/vision'},
           ],

@@ -51,5 +51,6 @@ See [Specification](./spec.md) for the full technical design.
 ## Pages
 
 - [Specification](./spec.md) — architecture, commands, release flow, generate
+- [FAQ](./faq.md) — the angry user edition, every hard question answered
 - [Research](./research.md) — ecosystem analysis, comparison with existing tools
 - [Vision](./vision.md) — roadmap from pkg/ to standalone repository

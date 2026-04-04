@@ -29,7 +29,7 @@ How to update:
 
 ## Testing
 
-- **Blackbox only** — all tests use `package xxx_test`. No exceptions.
+- **Blackbox only** — all tests use `package xxx_test`. The only exception: `package main` — Go does not allow importing main packages from external test packages, so `package main` tests are the only option there. Consider extracting complex logic from main into importable packages where it can be tested blackbox.
 - **If internal logic needs isolated testing, export it** — promote it to a proper type with a clear API. Facade for users, building blocks for testability.
 - **Godoc must describe edge cases** — if a function has non-obvious behavior, document it.
 - **Packages should have tests** — current coverage is low, this is a known debt.

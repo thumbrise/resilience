@@ -196,6 +196,20 @@ func TestDiscover_EmptyGoMod_Error(t *testing.T) {
 	}
 }
 
+func TestDiscover_RootRequiresSub_Error(t *testing.T) {
+	root := scaffold(t, "root_requires_sub")
+	d := newDiscovery()
+
+	_, err := d.Discover(root)
+	if err == nil {
+		t.Fatal("expected error when root requires a sub-module, got nil")
+	}
+
+	if !strings.Contains(err.Error(), "root module must not require") {
+		t.Errorf("error should explain root must not require sub-modules: %v", err)
+	}
+}
+
 func TestDiscover_SubsDeterministicOrder(t *testing.T) {
 	root := scaffold(t, "cross_deps")
 	d := newDiscovery()

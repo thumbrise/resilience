@@ -166,10 +166,17 @@ func (a *Applier) buildDesiredReplaces(state multimod.State, sub multimod.Module
 }
 
 // dropUnwantedReplaces removes internal replaces that are extra or have stale paths.
+// Collects paths first, then drops — avoids mutating the slice during iteration.
 // Stale replaces are dropped here and re-added by addMissingReplaces.
 func (a *Applier) dropUnwantedReplaces(file *modfile.File, state multimod.State, desired map[string]string) bool {
 	internalPaths := a.internalPaths(state)
-	changed := false
+
+	type dropEntry struct {
+		oldPath    string
+		oldVersion string
+	}
+
+	var toDrop []dropEntry
 
 	for _, rep := range file.Replace {
 		if !internalPaths[rep.Old.Path] {
@@ -181,13 +188,15 @@ func (a *Applier) dropUnwantedReplaces(file *modfile.File, state multimod.State,
 		// filepath.Clean normalizes trailing slashes: modfile preserves "../" from go.mod,
 		// but AbsDir.Rel returns ".." — both mean the same directory.
 		if !ok || filepath.Clean(rep.New.Path) != desiredRel {
-			_ = file.DropReplace(rep.Old.Path, rep.Old.Version)
-
-			changed = true
+			toDrop = append(toDrop, dropEntry{rep.Old.Path, rep.Old.Version})
 		}
 	}
 
-	return changed
+	for _, entry := range toDrop {
+		_ = file.DropReplace(entry.oldPath, entry.oldVersion)
+	}
+
+	return len(toDrop) > 0
 }
 
 // addMissingReplaces adds desired replaces not yet present in the file.

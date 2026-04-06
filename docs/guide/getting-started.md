@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: Install resilience and make your first resilient call in under a minute.
+description: Install the resilience library and make your first resilient call in under a minute.
 ---
 
 # Getting Started

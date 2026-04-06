@@ -2,7 +2,7 @@ import {defineConfig} from 'vitepress'
 
 export default defineConfig({
   title: 'resilience',
-  description: 'Composable resilience for Go function calls. Zero-dependency core with retry, backoff, and OpenTelemetry plugins.',
+  description: 'Composable resilience library for Go function calls. Zero-dependency core with retry, backoff, and OpenTelemetry plugins.',
   base: '/resilience/',
   sitemap: {
     hostname: 'https://thumbrise.github.io/resilience/',
@@ -14,11 +14,12 @@ export default defineConfig({
     ['meta', { property: 'og:image', content: 'https://thumbrise.github.io/resilience/og-image.png' }],
     ['meta', {property: 'og:type', content: 'website'}],
     ['meta', {property: 'og:title', content: 'resilience — composable resilience for Go'}],
-    ['meta', {property: 'og:description', content: 'Zero-dependency core. Retry, backoff, plugins. One primitive: func(ctx, call) error.'}],
+    ['meta', {property: 'og:description', content: 'Go resilience library. Zero-dependency core. Retry, backoff, plugins. One primitive: func(ctx, call) error.'}],
     ['meta', {property: 'og:url', content: 'https://thumbrise.github.io/resilience/'}],
     ['meta', {name: 'twitter:card', content: 'summary'}],
     ['meta', {name: 'twitter:title', content: 'resilience — composable resilience for Go'}],
     ['meta', {name: 'twitter:description', content: 'Zero-dependency core. Retry, backoff, plugins. One primitive: func(ctx, call) error.'}],
+    ['meta', {name: 'keywords', content: 'go resilience library, go retry library, golang backoff, go circuit breaker, resilience pattern go, error retry golang, zero dependency'}],
   ],
 
   themeConfig: {

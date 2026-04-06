@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: resilience
-  text: Composable resilience for Go
-  tagline: "Zero-dependency core. Retry, backoff, plugins. One primitive: func(ctx, call) error."
+  text: Composable resilience library for Go
+  tagline: "Zero-dependency library. Retry, backoff, plugins. One primitive: func(ctx, call) error."
   actions:
     - theme: brand
       text: Quick Start

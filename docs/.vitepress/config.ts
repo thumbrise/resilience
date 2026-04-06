@@ -8,6 +8,10 @@ export default defineConfig({
     hostname: 'https://thumbrise.github.io/resilience/',
   },
   head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/resilience/favicon.svg' }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '96x96', href: '/resilience/favicon-96x96.png' }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/resilience/apple-touch-icon.png' }],
+    ['meta', { property: 'og:image', content: 'https://thumbrise.github.io/resilience/og-image.png' }],
     ['meta', {property: 'og:type', content: 'website'}],
     ['meta', {property: 'og:title', content: 'resilience — composable resilience for Go'}],
     ['meta', {property: 'og:description', content: 'Zero-dependency core. Retry, backoff, plugins. One primitive: func(ctx, call) error.'}],

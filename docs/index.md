@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: resilience
-  text: Composable resilience library for Go
-  tagline: "Zero-dependency library. Retry, backoff, plugins. One primitive: func(ctx, call) error."
+  text: Composable fault tolerance library for Go
+  tagline: "Open source, zero-dependency resilience middleware. Retry, backoff, circuit breaker, rate limiter — one primitive: func(ctx, call) error."
   actions:
     - theme: brand
       text: Quick Start
@@ -19,7 +19,7 @@ hero:
 features:
   - icon: 🧱
     title: One Primitive
-    details: "Every resilience pattern is an Option: func(ctx, call) error. Retry, timeout, circuit breaker, bulkhead — same shape. Compose like Lego."
+    details: "Every resilience pattern is an Option: func(ctx, call) error. Retry, timeout, circuit breaker, rate limiter — same middleware shape. Compose like Lego."
   - icon: 🪶
     title: Zero Dependencies
     details: "Core package has zero external dependencies. OTEL, gRPC, circuit breaker — opt-in via separate Go modules. go get pulls only what you use."

@@ -102,6 +102,52 @@ Three levels of trust. Without `--write` — read-only. With `--write` — local
 
 No. Multimod will reject this with a clear error: "root module must not require internal sub-modules." Root is the zero-deps core. Subs depend on root, not reverse. This is the standard Go monorepo convention (OTEL, Kubernetes, every major project).
 
+### "I renamed my module directory and releases broke! Multimod is garbage!"  
+  
+Multimod is fine. You broke your users. Renaming a Go module directory = changing the module path = breaking change for every downstream consumer. This is Go's rule, not ours. `github.com/you/project/otel` and `github.com/you/project/motel` are two different modules — like two different npm packages. Old tags still point to the old module path. New directory has zero release history. Every user must change their import paths manually. Multimod can't prevent this because it sees current state, not history — and even if it could, the decision to rename is yours, not ours.
+
+### "OTEL has module sets — groups of modules with different versions. Where's yours?"  
+  
+You don't need them. Module sets exist because OTEL has no discovery — they don't know what modules exist, so they list them in YAML. Since they already have YAML, they added grouping. We discover modules automatically.  
+  
+Module = package with `go.mod`. That's Go's rule, not ours. You either release all modules together (default) or one specific module (`--module` flag). Arbitrary groupings ("A+C together, B+D together") are a symptom of bad structure. If two modules always release together — they should be one module. If not — they're independent. No config file needed.
+
+### "OTEL checks that stable modules don't depend on unstable ones. You don't?"  
+  
+Correct. That's not a release concern — it's an analysis concern. Like Capslock analyzers, like `go vet`, like any static analysis tool. It shouldn't block your dev or release flow.  
+  
+Multimod reports facts. External tools apply policy:  
+  
+\`\`\`bash  
+multimod modules | your-stability-checker  
+\`\`\`  
+  
+Want to check stable→unstable deps? Write a `jq` one-liner over `multimod modules` output. Want a different policy? Change the one-liner. Multimod doesn't judge your dependency graph — it describes it.
+
+### "Why do I have to specify the version manually? Can't you auto-increment?"  
+  
+No. Version strategy is your decision, not ours. Semantic-release? Conventional commits? Manual changelog review? Calendar versioning? We don't know and we don't care.  
+  
+`multimod release v1.2.3` — you tell us what. We do it. How you arrived at `v1.2.3` is between you and your CI pipeline. Unix way — each tool does one thing.
+
+### "How do I know which module to release? Can't multimod detect changes?"  
+  
+That's git's job. Multimod knows what exists. Git knows what changed. Pipe them:  
+  
+\`\`\`bash  
+multimod modules | jq -r '.subs[].dir' | while read dir; do  
+  git log v1.2.0..HEAD --oneline -- "$dir" | grep -q . && echo "$dir"  
+done  
+\`\`\`  
+  
+We don't reinvent `git diff`. We give you the module list, git gives you the history, your script makes the decision. Three tools, three responsibilities, zero overlap.
+
+### "I ran multimod in CI and it shows zero releases! All my tags are gone!"  
+  
+Your CI does `git clone --depth 1`. Tags aren't fetched. That's not a multimod problem — that's a CI configuration problem. Like buying a car and not filling the gas tank, then complaining to the dealership.  
+  
+Multimod reports what it sees in your local git. No tags locally? No tags reported. Add `fetch-depth: 0` or `git fetch --tags` to your CI config. Multimod will warn if it detects a shallow clone with zero tags — but it won't fix your pipeline for you.
+
 ## Competition
 
 ### "Why not use OTEL's multimod?"
@@ -140,6 +186,24 @@ No. `multimod && git diff --quiet` is your verify. Multimod syncs state, git sho
 ### "What about template generation? Dependabot configs?"
 
 Templates in `.multimod/templates/` run automatically as part of every `multimod` invocation. Not a command — a pipeline step. Add a template, run multimod, get generated files. Remove a template, multimod stops owning those files.
+
+### "How do I integrate with conventional commits and commitlint?"  
+  
+Multimod gives you the module list. Commitlint validates scopes. CI connects them:  
+  
+\`\`\`bash  
+# Generate allowed scopes from actual modules  
+multimod modules | jq -r '.subs[].dir' > .allowed-scopes  
+  
+# Commitlint validates against dynamic list  
+commitlint --scopes-from .allowed-scopes  
+  
+# CI extracts scope from commit, releases that module  
+MODULE=$(git log -1 --format='%s' | parse-scope)  
+multimod release v1.3.0 --module "$MODULE" --write --push  
+\`\`\`  
+  
+Multimod doesn't know about conventional commits. Commitlint doesn't know about Go modules. Composition through stdout. Add a module — scope appears automatically. Remove a module — scope disappears. Zero maintenance.
 
 ---
 

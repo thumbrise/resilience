@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: Install the resilience library and make your first resilient call in under a minute.
+description: Install the open source Go (golang) fault tolerance library. Retry, backoff, error handling middleware — first resilient call in under a minute.
 ---
 
 # Getting Started

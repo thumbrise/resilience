@@ -4,7 +4,7 @@ layout: home
 hero:
   name: resilience
   text: Composable fault tolerance library for Go
-  tagline: "Open source, zero-dependency resilience middleware. Retry, backoff, circuit breaker, rate limiter — one primitive: func(ctx, call) error."
+  tagline: '<a href="https://github.com/thumbrise/resilience/releases"><img src="https://img.shields.io/github/v/release/thumbrise/resilience?label=latest&color=blue" alt="Latest Release" style="display:inline-block;vertical-align:middle;margin-bottom:8px" /></a><br>Open source resilience middleware for Go. Retry, backoff — battle-tested. Circuit breaker, rate limiter — on the roadmap. One primitive: func(ctx, call) error.'
   actions:
     - theme: brand
       text: Quick Start
@@ -19,10 +19,12 @@ hero:
 features:
   - icon: 🧱
     title: One Primitive
-    details: "Every resilience pattern is an Option: func(ctx, call) error. Retry, timeout, circuit breaker, rate limiter — same middleware shape. Compose like Lego."
+    details: "Every resilience pattern is an Option: func(ctx, call) error. Retry, backoff — ready. Timeout, circuit breaker, rate limiter — same shape, planned."
   - icon: 🪶
-    title: Zero Dependencies
-    details: "Core package has zero external dependencies. OTEL, gRPC, circuit breaker — opt-in via separate Go modules. go get pulls only what you use."
+    title: Zero Dependencies (target)
+    details: "Target architecture: zero-dependency core, OTEL and future plugins in separate Go modules. Currently blocked on multimod tooling — today everything lives in one module. Tracking in devlog #3."
+    link: /devlog/003-multimod-gap
+    linkText: Why it's blocked →
   - icon: 🔌
     title: Two Extension Points
     details: "Option controls execution (per-call). Plugin observes execution (shared state). Two words, two contracts, no confusion."
@@ -34,7 +36,7 @@ features:
     details: "Each Do() gets fresh Options. No shared mutable state. No data races by construction, not by mutex."
   - icon: 🚧
     title: Active Development
-    details: "Born from a real project. Extracted from autosolve after killing a 1500-line framework. Battle-tested patterns, clean API."
-    link: /devlog/
-    linkText: Read the story →
+    details: "Born from killing a 1500-line framework inside autosolve. Retry and backoff are battle-tested. Circuit breaker, rate limiter, bulkhead — planned. This is a growing toolkit, not a finished product."
+    link: /guide/roadmap
+    linkText: See the roadmap →
 ---

@@ -5,6 +5,15 @@ head:
   - - meta
     - name: keywords
       content: go, golang, multi-module, monorepo, go.work, go mod replace, workspace, release tool, sub-module tagging, go mod tidy
+    - - meta
+    - property: og:image  
+      content: https://thumbrise.github.io/resilience/og-image-multimod.png
+    - - meta
+    - property: og:title  
+      content: "multimod — zero-config release autopilot for Go multi-module monorepos"
+    - - meta
+    - property: og:description  
+      content: "The missing cargo-release for Go. Auto-discovery, workspace sync, publish preparation, sub-module tagging."
 ---
 
 # multimod

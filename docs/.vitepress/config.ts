@@ -19,7 +19,7 @@ export default defineConfig({
     ['meta', {name: 'twitter:card', content: 'summary'}],
     ['meta', {name: 'twitter:title', content: 'resilience — composable resilience for Go'}],
     ['meta', {name: 'twitter:description', content: 'Zero-dependency core. Retry, backoff, plugins. One primitive: func(ctx, call) error.'}],
-    ['meta', {name: 'keywords', content: 'go resilience library, go retry library, golang backoff, go circuit breaker, resilience pattern go, error retry golang, zero dependency'}],
+    ['meta', {name: 'keywords', content: 'go resilience library, golang retry, fault tolerance go, go circuit breaker, go backoff, go error handling, resilience middleware, rate limiter go, open source go library, zero dependency'}],
   ],
 
   themeConfig: {

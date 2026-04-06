@@ -2,7 +2,7 @@ import {defineConfig} from 'vitepress'
 
 export default defineConfig({
   title: 'resilience',
-  description: 'Composable resilience library for Go function calls. Zero-dependency core with retry, backoff, and OpenTelemetry plugins.',
+  description: 'Open source fault tolerance library for Go. Composable retry, backoff, circuit breaker, rate limiter middleware. Zero dependencies. One primitive: func(ctx, call) error.',
   base: '/resilience/',
   sitemap: {
     hostname: 'https://thumbrise.github.io/resilience/',

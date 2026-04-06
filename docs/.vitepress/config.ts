@@ -5,7 +5,7 @@ export default defineConfig({
   description: 'Composable resilience for Go function calls. Zero-dependency core with retry, backoff, and OpenTelemetry plugins.',
   base: '/resilience/',
   sitemap: {
-    hostname: 'https://thumbrise.github.io/resilience',
+    hostname: 'https://thumbrise.github.io',
   },
   head: [
     ['meta', {property: 'og:type', content: 'website'}],

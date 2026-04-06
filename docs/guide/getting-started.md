@@ -11,13 +11,9 @@ description: Install the open source Go (golang) fault tolerance library. Retry,
 go get github.com/thumbrise/resilience
 ```
 
-Core module has **zero external dependencies**. Your `go.sum` stays clean.
-
-Want OTEL metrics? Separate module, separate `go get`:
-
-```bash
-go get github.com/thumbrise/resilience/otel
-```
+::: warning Mono-module today
+Currently, the entire project (core + OTEL + multimod CLI) lives in one Go module. `go get` pulls all transitive dependencies, including the OTEL SDK. Zero-dependency core via separate Go modules is the [target architecture](/devlog/003-multimod-gap), blocked on multimod tooling.
+:::
 
 ## Your first resilient call
 
@@ -80,9 +76,36 @@ Every call through this Client emits OTEL metrics automatically:
 | **Client** | Holds Plugins, creates CallBuilders | Application-wide, immutable |
 | **Do** | Stateless shortcut — no Client needed | One-off calls |
 
+## Architecture
+
+Two levels of configuration, two extension points:
+
+```
+Client (application-wide)          CallBuilder (per-call)
+├── Plugin: OTEL metrics           ├── Option: retry
+├── Plugin: circuit breaker (*)    ├── Option: timeout (*)
+└── Plugin: logging (*)            └── Option: rate limit (*)
+
+(*) planned — not yet implemented
+```
+
+**Client** — immutable, thread-safe, one per application. Holds Plugins with shared state.
+
+**CallBuilder** — per-call, fresh on every `Call()`. Holds Options with per-call state.
+
+## Design principles
+
+- **Option is the universal primitive** — `func(ctx, call) error`. Full control. Any pattern.
+- **Plugin observes, Option controls** — two contracts, two lifecycles, no confusion.
+- **Per-call state** — Options are fresh on every `Do()`. No shared mutable state. No data races.
+- **Events via context** — Plugins attach Events to context. Options extract if needed. No coupling.
+- **Backoff is pure math** — `func(attempt int) time.Duration`. Open/closed forever.
+
 ## What's next
 
-- [Retry docs](https://pkg.go.dev/github.com/thumbrise/resilience/retry) — error matching, budgets, WaitHint
-- [Backoff docs](https://pkg.go.dev/github.com/thumbrise/resilience/backoff) — Exponential, Constant, custom
-- [OTEL docs](https://pkg.go.dev/github.com/thumbrise/resilience/otel) — metrics plugin
-- [Origin story](https://thumbrise.github.io/autosolve/devlog/013-killing-longrun.html) — how this package was born
+- [Options & Plugins](/guide/options-plugins) — the two extension points, how to write your own
+- [Retry](/guide/retry) — error matching, budgets, WaitHint
+- [Backoff](/guide/backoff) — Exponential, Constant, custom
+- [Observability (OTEL)](/guide/otel) — metrics plugin, one line setup
+- [Roadmap](/guide/roadmap) — what's ready, what's next, what's on the horizon
+- [Origin story](/devlog/001-package-extracting) — how this package was born

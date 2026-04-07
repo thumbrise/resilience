@@ -35,7 +35,7 @@ resilience.go          Core: Option, Plugin, Events, Client, CallBuilder, Do
 sleepctx.go            Context-aware sleep (used by sub-packages)
 backoff/               Pure math: Exponential, Constant, Default
 retry/                 Retry Option: On, OnFunc, WithWaitHint
-otel/                  OTEL metrics Plugin (separate go.mod, external deps)
+otel/                  OTEL metrics Plugin (sub-package, same root module)
 _tools/                Dev tools: license-eye, govulncheck (separate go.mod)
 pkg/multimod/          Multi-module tooling (WIP, see docs/internals/multimod/)
 docs/                  VitePress documentation site
@@ -43,9 +43,9 @@ docs/                  VitePress documentation site
 
 ## Multi-module (planned)
 
-Currently the project is a monorepo with a single root module. Only `otel/` is a separate module (to keep core zero-deps).
+Currently the project is a single Go module. All packages (core, otel, multimod) share one `go.mod`. `go get` pulls all transitive dependencies including the OTEL SDK.
 
-Full multi-module support (separate `go.mod` per sub-package) is planned and blocked on the [multimod](docs/internals/multimod/) tool we're building. See [devlog #3](/docs/devlog/) for the full story.
+Zero-dependency core via separate Go modules is the [target architecture](docs/internals/multimod/), blocked on the multimod tool we're building. See [devlog #3](/docs/devlog/) for the full story.
 
 ## Writing an Option
 

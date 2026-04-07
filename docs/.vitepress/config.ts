@@ -35,10 +35,10 @@ export default defineConfig({
           text: 'Guide',
           items: [
             {text: 'Getting Started', link: '/guide/getting-started'},
-            {text: 'Options & Plugins', link: '/guide/options-plugins'},
             {text: 'Retry', link: '/guide/retry'},
             {text: 'Backoff', link: '/guide/backoff'},
             {text: 'Observability (OTEL)', link: '/guide/otel'},
+            {text: 'Options & Plugins', link: '/guide/options-plugins'},
             {text: 'Roadmap', link: '/guide/roadmap'},
           ],
         },

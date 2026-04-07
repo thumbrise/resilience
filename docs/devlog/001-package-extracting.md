@@ -83,7 +83,7 @@ DSL (Go-native, composable):
   Client — holds plugins, creates call builders
   Do     — stateless shortcut for one-off calls
 
-Integrations (opt-in, separate modules):
+Integrations (opt-in, target: separate modules):
   otel/  — OTEL metrics plugin
   grpc/  — gRPC middleware (future)
   http/  — HTTP client wrapper (future)
@@ -116,10 +116,9 @@ The algorithm (`CircuitBreaker` state machine) is pure — write once, test a bi
 - The `go.sum` pulls autosolve's dependencies (SQLite, Cobra, Wire, etc.)
 
 Extraction into `github.com/thumbrise/resilience` gives:
-- `go get github.com/thumbrise/resilience` — zero dependencies, clean `go.sum`
-- `go get github.com/thumbrise/resilience/otel` — only OTEL SDK, nothing else
 - Independent versioning, independent CI, independent contributors
-- Multi-module structure ready for future sub-packages (`circuit/`, `bulkhead/`, `grpc/`)
+- Architecture ready for future sub-packages (`circuit/`, `bulkhead/`, `grpc/`)
+- Target: zero-dependency core via separate Go modules (blocked on [multimod](/devlog/003-multimod-gap) — today everything lives in one `go.mod`)
 
 ## What's Here Now
 
@@ -132,7 +131,7 @@ Extraction into `github.com/thumbrise/resilience` gives:
 - **retry.On** with `errors.Is` + `errors.As` + `OnFunc` — error matching that actually works
 - **backoff.Func** as `func(attempt int) time.Duration` — pure math, open/closed forever
 - **WithWaitHint** — application-level override for server-suggested delays (Retry-After)
-- **rsotel.Plugin()** — OTEL metrics, opt-in via separate module
+- **rsotel.Plugin()** — OTEL metrics plugin (sub-package today, separate module planned)
 
 This is Phase 1. A house is not weak because it doesn't have a second floor yet.
 

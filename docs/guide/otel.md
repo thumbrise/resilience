@@ -54,4 +54,4 @@ If no OTEL SDK is configured, the default no-op meter produces no-op instruments
 
 OTEL is a Plugin, not an Option. It observes — doesn't control execution. Shared across all calls via Client. This is the canonical example of when to use Plugin vs Option.
 
-Ready to see the full picture? Check [Options & Plugins](/guide/options-plugins) for the two extension points in depth.
+Want to go deeper? [Options & Plugins](/guide/options-plugins) explains the two extension points and how to write your own.

@@ -103,9 +103,9 @@ Client (application-wide)          CallBuilder (per-call)
 
 ## What's next
 
-- [Options & Plugins](/guide/options-plugins) — the two extension points, how to write your own
 - [Retry](/guide/retry) — error matching, budgets, WaitHint
 - [Backoff](/guide/backoff) — Exponential, Constant, custom
 - [Observability (OTEL)](/guide/otel) — metrics plugin, one line setup
+- [Options & Plugins](/guide/options-plugins) — want to write your own patterns? Start here
 - [Roadmap](/guide/roadmap) — what's ready, what's next, what's on the horizon
 - [Origin story](/devlog/001-package-extracting) — how this package was born

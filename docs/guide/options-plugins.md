@@ -131,4 +131,4 @@ func (p *loggingPlugin) Events() resilience.Events {
 
 **Rule of thumb:** if it wraps `call()` — Option. If it watches from the side — Plugin.
 
-Now that you know the two extension points, let's see the most important Option in action: [Retry](/guide/retry).
+Now you know how to extend resilience. See what's coming next on the [Roadmap](/guide/roadmap).

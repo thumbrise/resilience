@@ -59,7 +59,7 @@ The documentation you're reading is the result of this migration. Adapted from a
 - **Blocked:** zero-dependency core — today everything lives in one `go.mod`, OTEL SDK included. Waiting on [multimod](/devlog/003-multimod-gap) to split modules
 - **Planned:** timeout, circuit breaker, presets — see the [roadmap](/guide/roadmap)
 
-The monomodule problem remains. `go get github.com/thumbrise/resilience` pulls the OTEL SDK transitively. That gets solved when multimod ships its `release` command. One problem at a time.
+The mono-module problem remains. `go get github.com/thumbrise/resilience` pulls the OTEL SDK transitively. That gets solved when multimod ships its `release` command. One problem at a time.
 
 ## The Pattern Continues
 

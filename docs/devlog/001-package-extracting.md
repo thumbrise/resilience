@@ -40,7 +40,7 @@ The pattern was clear: every library solves one pattern in isolation. None of th
 | Compose retry + timeout + circuit | manually | no | builder chain | `With(a, b, c)` |
 | Observability without code changes | no | no | per-policy | Plugin interface |
 | context.Context by design | no | no | yes | yes |
-| Zero deps in core | no | yes | no | yes |
+| Zero deps in core | no | yes | no | yes (target — today mono-module) |
 | Error matching | `Permanent()` only | no | yes | `errors.Is` + `errors.As` + `func(error) bool` |
 | WaitHint (Retry-After) | no | N/A | no | yes |
 | Per-call state (no data races) | N/A | shared mutable | shared mutable | by construction |

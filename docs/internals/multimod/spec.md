@@ -104,7 +104,7 @@ multimod && git diff --quiet || exit 1
 
 Transparent proxy with multi-module awareness.
 
-Multi-module commands (registry: `test`, `vet`, `build` with `./...`, `mod tidy`): iterate all modules via `exec.CommandContext`, aggregate results.
+Multi-module commands (registry: `test`, `vet`, `build` with `./...`, `mod tidy`, `tool <name>` with `./...`): iterate all modules via `exec.CommandContext`, aggregate results.
 
 Everything else: `syscall.Exec("go", args)` — direct passthrough, replaces process.
 
@@ -134,9 +134,27 @@ Main **never leaves dev-state**. The publish-state commit is detached — access
 
 The `-dev` tag is for human traceability — quickly find which main commit produced the release. Tools (semantic-release, changelog generators) work through git parent chain from the stable tag.
 
-### `multimod modules` (vision)
+### `multimod modules`
 
-JSON output with project structure for external tools. Not yet implemented — waiting for concrete use case.
+JSON output with project module map. Designed for piping into external tools.
+
+```bash
+multimod modules | multirelease v1.2.3 --write
+multimod modules | jq '.subs[].dir'
+```
+
+Output contract:
+
+```json
+{
+  "root": {"path": "...", "dir": "/absolute/path", "go_version": "1.25.0"},
+  "subs": [
+    {"path": "...", "dir": "/absolute/path/otel", "requires": ["..."]}
+  ]
+}
+```
+
+Dirs are absolute — pipe consumers don't know the caller's cwd. Only internal requires are included — external deps are not multimod's concern.
 
 ## Template generation (part of apply)
 
@@ -181,7 +199,7 @@ Committed: `templates/`, `.gitignore`. Ignored: `cache/`.
 |---|---|---|
 | New discovery step | New file in `steps/` + one line in `NewDefaultDiscovery()` | 1 new + 1 line |
 | New command | New struct + add to `NewCommands` registry | 1 new + 1 line |
-| New multi-module go subcommand | Add entry to `multiModuleCommands` map | 1 line |
+| New multi-module go subcommand | Add matcher to `NewDefault()` in `goinvoker/internal/classifier/classifier.go` | 1 line |
 | New template | Add `.tmpl` file to `.multimod/templates/` | 1 file |
 
 ## Requirements

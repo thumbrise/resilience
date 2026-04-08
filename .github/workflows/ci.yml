@@ -31,6 +31,12 @@ jobs:
         with:
           version: ${{ env.TASK_VERSION }}
 
+      - name: Install golangci-lint
+        uses: golangci/golangci-lint-action@v7
+        with:
+          version: v2.11.4
+          args: --help
+
       - name: Run lint
         run: task lint:ci
 
@@ -50,7 +56,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: Test
-        run: go test ./... -v
+        run: go run ./cmd/multimod go test ./... -v
 
   commitlint:
     name: Lint commit messages

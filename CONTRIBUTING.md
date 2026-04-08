@@ -3,7 +3,7 @@
 ## Requirements
 
 - **Go 1.24.x** — exact major.minor match required.
-- **Docker** — golangci-lint runs in a container to guarantee consistent results regardless of your local setup.
+- **[golangci-lint](https://golangci-lint.run/welcome/install/)** — install locally. Version must match `GOLANGCI_LINT_VERSION` in `Taskfile.yaml`.
 - **[Task](https://taskfile.dev/)** — task runner. Install: `go install github.com/go-task/task/v3/cmd/task@latest`
 - **Node.js** (optional) — only for commitlint and docs build.
 
@@ -21,7 +21,7 @@ go test ./...
 # Run tests
 go test ./... -v
 
-# Run lint (Docker, no local golangci-lint needed)
+# Run lint (requires golangci-lint installed locally)
 task lint
 
 # Fix license headers

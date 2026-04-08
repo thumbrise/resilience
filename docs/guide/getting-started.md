@@ -12,7 +12,7 @@ go get github.com/thumbrise/resilience
 ```
 
 ::: warning Mono-module today
-Currently, the entire project (core + OTEL + multimod CLI) lives in one Go module. `go get` pulls all transitive dependencies, including the OTEL SDK. Zero-dependency core via separate Go modules is the [target architecture](/devlog/003-multimod-gap), blocked on multimod tooling.
+Currently, the entire project (core + OTEL) lives in one Go module. `go get` pulls all transitive dependencies, including the OTEL SDK. Zero-dependency core via separate Go modules is the [target architecture](/devlog/003-multimod-gap), blocked on [multimod](https://github.com/thumbrise/multimod) — a standalone tool extracted from this repository.
 :::
 
 ## Your first resilient call

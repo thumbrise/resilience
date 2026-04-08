@@ -56,10 +56,10 @@ Five devlogs later, the library that started as "maybe we should build our own" 
 The documentation you're reading is the result of this migration. Adapted from autosolve's internal docs, cleaned up, and made honest:
 
 - **Ready:** retry, backoff, OTEL plugin, Option/Plugin architecture
-- **Blocked:** zero-dependency core — today everything lives in one `go.mod`, OTEL SDK included. Waiting on [multimod](/devlog/003-multimod-gap) to split modules
+- **Blocked:** zero-dependency core — today everything lives in one `go.mod`, OTEL SDK included. Waiting on [multimod](https://github.com/thumbrise/multimod) (extracted to standalone repo) to split modules
 - **Planned:** timeout, circuit breaker, presets — see the [roadmap](/guide/roadmap)
 
-The mono-module problem remains. `go get github.com/thumbrise/resilience` pulls the OTEL SDK transitively. That gets solved when multimod ships its `release` command. One problem at a time.
+The mono-module problem remains. `go get github.com/thumbrise/resilience` pulls the OTEL SDK transitively. That gets solved when [multimod](https://github.com/thumbrise/multimod) ships its `release` command. One problem at a time.
 
 ## The Pattern Continues
 

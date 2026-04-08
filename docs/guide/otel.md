@@ -12,7 +12,7 @@ head:
 `resilience/otel` provides an OpenTelemetry Plugin for the resilience package.
 
 ::: info Same module for now
-OTEL is a sub-package inside the same Go module as core. Separate `go.mod` for otel is the [target architecture](/devlog/003-multimod-gap), blocked on multimod.
+OTEL is a sub-package inside the same Go module as core. Separate `go.mod` for otel is the [target architecture](/devlog/003-multimod-gap), blocked on [multimod](https://github.com/thumbrise/multimod) (extracted to standalone repo).
 :::
 
 ## Usage

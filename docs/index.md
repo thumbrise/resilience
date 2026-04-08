@@ -22,7 +22,7 @@ features:
     details: "Every resilience pattern is an Option: func(ctx, call) error. Retry, backoff — ready. Timeout, circuit breaker, rate limiter — same shape, planned."
   - icon: 🪶
     title: Zero Dependencies (target)
-    details: "Target architecture: zero-dependency core, OTEL and future plugins in separate Go modules. Currently blocked on multimod tooling — today everything lives in one module. Tracking in devlog #3."
+    details: "Target architecture: zero-dependency core, OTEL and future plugins in separate Go modules. Blocked on multimod (extracted to standalone repo) — today everything lives in one module. Tracking in devlog #3."
     link: /devlog/003-multimod-gap
     linkText: Why it's blocked →
   - icon: 🔌

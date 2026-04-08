@@ -9,7 +9,7 @@ Composable resilience for Go function calls.
 
 It all started with [killing a 1500-line framework](https://thumbrise.github.io/resilience/devlog/001-package-extracting). We had 20 files, 12 terms, and a God Object — all for one idea: "if a function fails, maybe try again." We deleted everything and replaced it with one type: `func(ctx, call) error`. That type covers retry, backoff, and any future resilience pattern — composed like Lego.
 
-> **Mono-module today.** The project is currently a single Go module. `go get` pulls all transitive dependencies including the OTEL SDK. Zero-dependency core via separate Go modules is the [target architecture](https://thumbrise.github.io/resilience/devlog/003-multimod-gap), blocked on multimod tooling.
+> **Mono-module today.** The project is currently a single Go module. `go get` pulls all transitive dependencies including the OTEL SDK. Zero-dependency core via separate Go modules is the [target architecture](https://thumbrise.github.io/resilience/devlog/003-multimod-gap), blocked on [multimod](https://github.com/thumbrise/multimod) — a standalone tool extracted from this repository.
 
 ## Install
 

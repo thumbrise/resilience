@@ -20,7 +20,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/thumbrise/resilience/pkg/multimod"
+	"github.com/thumbrise/resilience/cmd/multimod/model"
 )
 
 // ErrNoGoMod is returned when no go.mod exists in the current directory.
@@ -29,7 +29,7 @@ var ErrNoGoMod = errors.New("no go.mod in current directory — run multimod fro
 // Boot holds the result of project root discovery.
 type Boot struct {
 	// RootDir is the absolute path to the project root (cwd).
-	RootDir multimod.AbsDir
+	RootDir model.AbsDir
 
 	// MultiModule is true if sub-directories contain their own go.mod files.
 	MultiModule bool
@@ -56,12 +56,12 @@ func (b Bootloader) Boot() (Boot, error) {
 		return Boot{}, fmt.Errorf("getting working directory: %w", err)
 	}
 
-	rootDir, err := multimod.NewAbsDir(cwd)
+	rootDir, err := model.NewAbsDir(cwd)
 	if err != nil {
 		return Boot{}, fmt.Errorf("resolving absolute path: %w", err)
 	}
 
-	if _, err := os.Stat(filepath.Join(rootDir.String(), multimod.ModuleMarker)); err != nil {
+	if _, err := os.Stat(filepath.Join(rootDir.String(), model.ModuleMarker)); err != nil {
 		return Boot{}, ErrNoGoMod
 	}
 
@@ -76,14 +76,14 @@ func (b Bootloader) Boot() (Boot, error) {
 }
 
 // hasGitDir checks whether a .git directory exists in rootDir.
-func (b Bootloader) hasGitDir(rootDir multimod.AbsDir) bool {
+func (b Bootloader) hasGitDir(rootDir model.AbsDir) bool {
 	info, err := os.Stat(filepath.Join(rootDir.String(), ".git"))
 
 	return err == nil && info.IsDir()
 }
 
 // hasSubModules checks whether any subdirectory of rootDir contains a go.mod file.
-func (b Bootloader) hasSubModules(rootDir multimod.AbsDir) (bool, error) {
+func (b Bootloader) hasSubModules(rootDir model.AbsDir) (bool, error) {
 	found := false
 
 	err := filepath.WalkDir(rootDir.String(), func(path string, d os.DirEntry, err error) error {
@@ -93,14 +93,14 @@ func (b Bootloader) hasSubModules(rootDir multimod.AbsDir) (bool, error) {
 
 		if d.IsDir() {
 			// micro-optimization: hoist filter before WalkDir for large monorepos
-			if multimod.NewDefaultDirFilter().ShouldSkip(d.Name()) {
+			if model.NewDefaultDirFilter().ShouldSkip(d.Name()) {
 				return filepath.SkipDir
 			}
 
 			return nil
 		}
 
-		if d.Name() == multimod.ModuleMarker && filepath.Dir(path) != rootDir.String() {
+		if d.Name() == model.ModuleMarker && filepath.Dir(path) != rootDir.String() {
 			found = true
 
 			return filepath.SkipAll

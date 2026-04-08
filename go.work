@@ -1,7 +1,5 @@
 go 1.25.0
-
 use (
 	.
-	_tools
-	otel
+	./_tools
 )

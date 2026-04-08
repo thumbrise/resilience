@@ -41,7 +41,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa // indirect
-	golang.org/x/mod v0.33.0 // indirect
+	golang.org/x/mod v0.34.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/oauth2 v0.35.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
@@ -60,7 +60,3 @@ tool (
 	github.com/apache/skywalking-eyes/cmd/license-eye
 	golang.org/x/vuln/cmd/govulncheck
 )
-
-replace github.com/thumbrise/resilience => ..
-
-replace github.com/thumbrise/resilience/otel => ../otel

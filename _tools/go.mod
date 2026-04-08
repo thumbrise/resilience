@@ -60,3 +60,7 @@ tool (
 	github.com/apache/skywalking-eyes/cmd/license-eye
 	golang.org/x/vuln/cmd/govulncheck
 )
+
+replace github.com/thumbrise/resilience => ..
+
+replace github.com/thumbrise/resilience/otel => ../otel

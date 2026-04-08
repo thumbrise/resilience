@@ -20,7 +20,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/thumbrise/resilience/pkg/multimod/testutil"
+	"github.com/thumbrise/resilience/cmd/multimod/testutil"
 )
 
 // chdir changes cwd to dir for the duration of the test.
@@ -140,7 +140,7 @@ func TestBoot_WithGit_NoWarning(t *testing.T) {
 	}
 }
 
-func TestBoot_ExcludedDirs_NotMultiModule(t *testing.T) {
+func TestBoot_ExcludedDirs_UnderscoreIsMultiModule(t *testing.T) {
 	root := testutil.Scaffold(t, "excluded_dirs")
 	chdir(t, root.String())
 
@@ -149,8 +149,10 @@ func TestBoot_ExcludedDirs_NotMultiModule(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if result.MultiModule {
-		t.Error("MultiModule = true, want false (all sub go.mods in excluded dirs)")
+	// _tools/ is workspace-only but still a sub-module — Boot detects multi-module.
+	// vendor/ and testdata/ remain excluded.
+	if !result.MultiModule {
+		t.Error("MultiModule = false, want true (_tools/ is visible)")
 	}
 }
 

@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- **Go 1.24.x** — exact major.minor match required.
+- **Go 1.25+** — see `go.mod` for minimum version.
 - **[golangci-lint](https://golangci-lint.run/welcome/install/)** — install locally.
 - **[Task](https://taskfile.dev/)** — task runner. Install: `go install github.com/go-task/task/v3/cmd/task@latest`
 - **Node.js** (optional) — only for commitlint and docs build.

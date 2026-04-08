@@ -63,6 +63,7 @@ export default defineConfig({
             {text: '#5 — Release design', link: '/devlog/005-multimod-release-design'},
             {text: '#6 — autosolve migration', link: '/devlog/006-autosolve-migration'},
             {text: '#7 — The architecture fight', link: '/devlog/007-adversarial-architecture-review'},
+            {text: '#8 — multimod extracted', link: '/devlog/008-multimod-extracted'},
           ],
         },
       ],

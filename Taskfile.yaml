@@ -12,6 +12,10 @@ tasks:
     cmds:
       - golangci-lint run
       - go tool license-eye header check
+      # govulncheck moved to `task vuln` — observation, not a gate (see devlog #8)
+  vuln:
+    desc: Run vulnerability check (observation, not a gate)
+    cmds:
       - go tool govulncheck ./...
   test:
     desc: Run tests

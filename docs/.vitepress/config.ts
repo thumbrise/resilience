@@ -25,7 +25,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       {text: 'Guide', link: '/guide/getting-started'},
-      {text: 'Internals', link: '/internals/multimod/'},
+      {text: 'multimod ↗', link: 'https://thumbrise.github.io/multimod/'},
       {text: 'Devlog', link: '/devlog/'},
     ],
 
@@ -45,14 +45,9 @@ export default defineConfig({
       ],
       '/internals/multimod/': [
         {
-          text: 'multimod',
+          text: 'multimod (moved)',
           items: [
-            {text: 'Overview', link: '/internals/multimod/'},
-            {text: 'Specification', link: '/internals/multimod/spec'},
-            {text: 'FAQ — Angry User Edition', link: '/internals/multimod/faq'},
-            {text: 'Research', link: '/internals/multimod/research'},
-            {text: 'Vision', link: '/internals/multimod/vision'},
-            {text: 'RFC-001 — Ecosystem', link: '/internals/multimod/rfc-001-ecosystem'},
+            {text: 'Overview → multimod repo', link: '/internals/multimod/'},
           ],
         },
       ],

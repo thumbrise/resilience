@@ -3,7 +3,7 @@
 ## Requirements
 
 - **Go 1.24.x** — exact major.minor match required.
-- **[golangci-lint](https://golangci-lint.run/welcome/install/)** — install locally. Version must match `GOLANGCI_LINT_VERSION` in `Taskfile.yaml`.
+- **[golangci-lint](https://golangci-lint.run/welcome/install/)** — install locally.
 - **[Task](https://taskfile.dev/)** — task runner. Install: `go install github.com/go-task/task/v3/cmd/task@latest`
 - **Node.js** (optional) — only for commitlint and docs build.
 
@@ -37,15 +37,14 @@ backoff/               Pure math: Exponential, Constant, Default
 retry/                 Retry Option: On, OnFunc, WithWaitHint
 otel/                  OTEL metrics Plugin (sub-package, same root module)
 _tools/                Dev tools: license-eye, govulncheck (separate go.mod)
-pkg/multimod/          Multi-module tooling (WIP, see docs/internals/multimod/)
 docs/                  VitePress documentation site
 ```
 
-## Multi-module (planned)
+## Multi-module (blocked)
 
-Currently the project is a single Go module. All packages (core, otel, multimod) share one `go.mod`. `go get` pulls all transitive dependencies including the OTEL SDK.
+Currently the project is a single Go module. All packages (core, otel) share one `go.mod`. `go get` pulls all transitive dependencies including the OTEL SDK.
 
-Zero-dependency core via separate Go modules is the [target architecture](docs/internals/multimod/), blocked on the multimod tool we're building. See [devlog #3](/docs/devlog/) for the full story.
+Zero-dependency core via separate Go modules is the target architecture, blocked on [multimod](https://github.com/thumbrise/multimod) — a standalone tool extracted from this repository. See [devlog #3](/devlog/003-multimod-gap) for the problem and [devlog #7](/devlog/007-adversarial-architecture-review) for the architecture review.
 
 ## Writing an Option
 

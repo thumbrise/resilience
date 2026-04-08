@@ -46,9 +46,11 @@ When a real use case demands it:
 
 Each pattern is `func(ctx, call) error`. Each is an independent sub-package. Zero coupling between patterns. Community can publish their own.
 
-## 🧱 Infrastructure: multimod
+## 🧱 Infrastructure: multimod — ✅ Extracted
 
-The [multi-module gap](/devlog/003-multimod-gap) blocks the target architecture: zero-dependency core, each plugin in its own Go module. Today everything lives in one `go.mod`. When multimod ships its `release` command, we split modules. No breaking API changes — just `go.mod` boundaries.
+The [multi-module gap](/devlog/003-multimod-gap) blocks the target architecture: zero-dependency core, each plugin in its own Go module. Today everything lives in one `go.mod`.
+
+multimod has been extracted into a standalone repository: **[github.com/thumbrise/multimod](https://github.com/thumbrise/multimod)**. When it ships stable releases, we split modules. No breaking API changes — just `go.mod` boundaries.
 
 ## What we won't do
 

@@ -27,6 +27,7 @@ export default defineConfig({
       {text: 'Guide', link: '/guide/getting-started'},
       {text: 'multimod ↗', link: 'https://thumbrise.github.io/multimod/'},
       {text: 'Devlog', link: '/devlog/'},
+      {text: 'References', link: '/references/'},
     ],
 
     sidebar: {
@@ -67,6 +68,15 @@ export default defineConfig({
           ],
         },
       ],
+      '/references/': [
+        {
+          text: 'References',
+          items: [
+            {text: 'References', link: '/references/'},
+            {text: 'RFC-002 — Resilience Stress Debate', link: '/references/rfc-002-resilience-stress-debate'}
+          ]
+        }
+      ]
     },
 
     socialLinks: [

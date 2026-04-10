@@ -5,6 +5,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/thumbrise/resilience?label=latest&color=blue)](https://github.com/thumbrise/resilience/releases)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](/LICENSE)
 [![Coverage Status](https://coveralls.io/repos/github/thumbrise/resilience/badge.svg?branch=main)](https://coveralls.io/github/thumbrise/resilience?branch=main)
+[![Go Report Card](https://goreportcard.com/badge/github.com/thumbrise/resilience)](https://goreportcard.com/report/github.com/thumbrise/resilience)
 
 Composable resilience for Go function calls.
 

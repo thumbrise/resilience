@@ -1,11 +1,11 @@
 ---
-title: "RFC-001 — Moved"
+title: "multimod — Moved"
 head:
   - - meta
     - http-equiv: refresh
-      content: 0; url=https://thumbrise.github.io/multimod/reference/rfc-001-ecosystem.html
+      content: 0; url=https://thumbrise.github.io/multimod/
 ---
-# RFC-001 has moved
+# Multimod has moved
 This page has been moved to the standalone multimod repository.
-**New location:** [thumbrise.github.io/multimod/reference/rfc-001-ecosystem](https://thumbrise.github.io/multimod/reference/rfc-001-ecosystem.html)
+**New location:** [thumbrise.github.io/multimod](https://thumbrise.github.io/multimod/)
 You will be redirected automatically.

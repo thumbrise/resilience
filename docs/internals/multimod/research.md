@@ -1,11 +1,11 @@
 ---
-title: "multimod Research — Moved"
+title: "multimod — Moved"
 head:
   - - meta
     - http-equiv: refresh
-      content: 0; url=https://thumbrise.github.io/multimod/reference/research.html
+      content: 0; url=https://thumbrise.github.io/multimod/
 ---
-# Research has moved
+# Multimod has moved
 This page has been moved to the standalone multimod repository.
-**New location:** [thumbrise.github.io/multimod/reference/research](https://thumbrise.github.io/multimod/reference/research.html)
+**New location:** [thumbrise.github.io/multimod](https://thumbrise.github.io/multimod/)
 You will be redirected automatically.

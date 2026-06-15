@@ -220,7 +220,7 @@ func validateMaxRetries(caller string, maxRetries int) {
 func newMatcher(errVal error) func(error) bool {
 	// Case 1: *T where T implements error → errors.As.
 	rv := reflect.ValueOf(errVal)
-	if rv.Kind() == reflect.Ptr && rv.IsNil() {
+	if rv.Kind() == reflect.Pointer && rv.IsNil() {
 		errorIface := reflect.TypeOf((*error)(nil)).Elem()
 		if rv.Type().Implements(errorIface) {
 			targetType := rv.Type()

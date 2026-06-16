@@ -1,0 +1,10 @@
+#$schema: https://taskfile.dev/schema.json
+
+version: '3.17'
+
+tasks:
+  lint:
+    desc: Run lint with auto-fix where possible (dev workflow)
+    cmds:
+      - npm run fmt
+      - npx depcheck --yes
